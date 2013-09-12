@@ -55,7 +55,7 @@ Well, we just wait until the DOM is ready before loading our CSS fonts.
 
 In order to prevent any flashing of unstyled content, we hide our text until the fonts have loaded.  If the fonts haven't loaded after a certain amount of time (~600ms), we cancel the font loading and display the text as is... without any custom fonts.  Feel free to adjust this time to suit your needs.  I highly recommend not going over 1000ms.
 
-###The posibility of no fonts just caused my designer's head to explode###
+###The possibility of no fonts just caused my designer's head to explode###
 
 Well, you can explain to him how a fast-loading not-as-pretty-as-you-want page is way better than a very-slow-but-pretty page.  You can show him [real data](http://www.youtube.com/watch?v=Il4swGfTOSM&feature=player_detailpage#t=212) to support your cause.  Tissues are handy for these types of conversations.  Alos, try increasing the  fail-safe timeout until he's happy.
 

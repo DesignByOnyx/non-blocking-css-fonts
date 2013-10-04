@@ -1,4 +1,4 @@
-(function(fontString, document) {
+(function(document, fontString) {
 	"use strict";
 	var timer = 0,
 		link = null,
@@ -8,39 +8,61 @@
 		addEventListener = 'addEventListener',
 		removeEventListener = 'removeEventListener',
 		readyEvent = 'DOMContentLoaded',
-		injectCss = function(ev){
+		//loadEvent = 'load',
+		injectCss = function(){
 			link = document.createElement("link");
 			link.type = "text/css";
 			link.rel = "stylesheet";
 			link.href = fontString;
-			if( ev ) link[addEventListener]('load', callback, false);
+			
+			// unbind DOM ready event, bind CSS load event
+			if( addEventListener ) {
+				document[removeEventListener](readyEvent, injectCss, false);
+				link[addEventListener]('load', cssLoaded, false);
+			}
+			
 			head.appendChild(link);
 			
-			timer = setTimeout(callback, 500); // fail-safe in case font provider is slow
-			if( ev )
-				document[removeEventListener](readyEvent, injectCss, false);
+			// fail-safe timer in case the font provider is slow
+			timer = setTimeout(cssLoaded, 500);
 		},
-		callback = function(ev) {
-			if( ev ) clearTimeout(timer); // css loaded like it should, clear the timeout
-			else head.removeChild(link); // the fail-safe timer finished, remove css
+		cssLoaded = function(ev) {
+			// if there is NO event object, the fail-safe timer fired, remove css
+			if( !ev ) head.removeChild(link); // 
+			clearTimeout(timer);
 			
-			// A little delay is needed for font files to load
-			// This can sometimes result in FOUC if the font files are slow
-			// Either increase the timeout or use window.onload (with a fail-safe).
-			timer = setTimeout(function(){
-				html.setAttribute('class', html.getAttribute('class') + ' fonts-loaded');
-			}, 100);
+			// We need to give time for the actual font files to load
+			//if(addEventListener) window[addEventListener](loadEvent, showText, false);
+			timer = setTimeout(showText, 100);
+		},
+		showText = function(ev) {
+			clearTimeout(timer);
 			
-			link = null;
+			//if(addEventListener) window[removeEventListener](loadEvent, showText, false);
+			// Set a class on the HTML tag to show the text.
+			html.setAttribute('class', html.getAttribute('class').replace('fonts-loading', 'fonts-loaded'));
+			link = head = html = null;
 		};
 	
+	// Set a class on the HTML tag while fonts are loading 
+	// Use CSS to hide the text on the page
+	html.setAttribute('class', html.getAttribute('class') + ' fonts-loader fonts-loading');
+	
+	// Mini DOM ready
 	if( !document[addEventListener] )
 		addEventListener = document[attachEvent] ?
 			(readyEvent = 'onreadystatechange') 
+			// && (loadEvent = 'onload')
 			&& (removeEventListener = 'detachEvent')
 			&& attachEvent : '';
 	
-	html.setAttribute('class', html.getAttribute('class') + ' fonts-loading');
-	if( addEventListener ) document[addEventListener](readyEvent, injectCss, false);
-	else setTimeout(injectCss, 300);
-}('http://fonts.googleapis.com/css?family=Noto Sans:400,700,400italic,700italic|Montserrat:400,700', document));
+	// use the following if you want this globally available
+	//(window.domReady = function(f) {
+	(function domReady(f) { 
+		/in/.test(document.readyState) ? 
+			!addEventListener ? 
+				setTimeout(function() { domReady(f); }, 9) 
+				: document[addEventListener](readyEvent, f, false)
+			: f(); 
+	}(injectCss));
+}(document, 'http://fonts.googleapis.com/css?family=Parisienne'));

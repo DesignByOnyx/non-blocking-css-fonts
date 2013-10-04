@@ -1,0 +1,21 @@
+/* 
+Replace these with your own selectors.  
+The goal here is to hide the text but show any structural elements, backgrounds, borders, etc.
+*/
+
+.header nav,
+.main article,
+.footer .content {
+	.fonts-loader & {
+		-webkit-backface-visibility: hidden;
+		.transition(all 0.3s ease-out .2s); 
+	}
+	
+	.fonts-loading & {
+		opacity: 0;
+	}
+	
+	.fonts-loaded & {
+		opacity: 1;
+	}
+}

@@ -35,10 +35,11 @@
 		
 		// We need to give time for the actual font files to load
 		timer = setTimeout(showText, 500);
-		waitForWebfonts(showText);
+		waitForWebfonts();
 	}
 	
-	function waitForWebfonts(callback) {
+	// Borrowed and modified from http://stackoverflow.com/questions/4383226/using-jquery-to-know-when-font-face-fonts-are-loaded#answer-11689060
+	function waitForWebfonts() {
 	    var nodes = {},
 	    	length = "length",
 	    	style = "style",
@@ -86,11 +87,12 @@
 			    }
 		    }
 		    // Pass "true" so that we know the fail-safe timer didn't fire.
-		    callback(true);
+		    showText(true);
 	    }());
 	}
 	
 	function showText(ev) {
+		// if no ev, the the fail-safe timer fired.  Remove the fonts
 		if( !ev ) head.removeChild(link);
 		clearTimeout(timer);
 		
